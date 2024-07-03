@@ -1,0 +1,51 @@
+include:
+  # include the entire docker pipeline to build the backend docker image
+  - project: 'resengit/gitlab/pipeline-helpers'
+    ref: main
+    file: '/pipelines/docker-image-multi-arch.yaml'
+  # also include the templates for golang to define the job to build the shell client binary
+  - project: 'resengit/gitlab/pipeline-helpers'
+    ref: main
+    file: '/jobs/golang.yaml'
+
+.parallel-matrix-config:
+  parallel:
+    matrix:
+      - PH_CUSTOM_PLATFORM: [linux/amd64, linux/arm64, linux/arm/v7]
+
+create_distribution:
+  timeout: 3h
+  parallel: !reference [.parallel-matrix-config, parallel]
+  tags:
+    - platform-$PH_CUSTOM_PLATFORM
+  extends: .go-job-compile
+  script:
+    - |
+      IFS=/ read -r -d '' PH_CUSTOM_OS PH_CUSTOM_ARCH PH_CUSTOM_VARIANT < <(printf "%s\0" "$PH_CUSTOM_PLATFORM")
+      export PH_CUSTOM_PLATFORM_SLUG=${PH_CUSTOM_OS}-${PH_CUSTOM_ARCH}${PH_CUSTOM_VARIANT}
+
+      GO111MODULE=on go install go.opentelemetry.io/collector/cmd/builder@v0.92.0
+
+      export GOOS=$PH_CUSTOM_OS
+      export GOARCH=$PH_CUSTOM_ARCH
+      # remove the "v" prefix from the variant because GOARM wants only the number
+      export GOARM=${PH_CUSTOM_VARIANT//v/}
+
+      sed -i "s/name: otelcol-icos$/name: otelcol-icos-$PH_CUSTOM_PLATFORM_SLUG/g" otel-icos-config.yaml
+      .go/bin/builder --config=otel-icos-config.yaml
+  artifacts:
+    paths:
+      - otelcol-icos/otelcol-icos-*
+
+    
+build_docker:
+  parallel: !reference [.parallel-matrix-config, parallel]
+  tags:
+    - hw-$PH_CUSTOM_PLATFORM
+  variables:
+    PH_DOCKER_IMAGE_TAG_APPEND_PLATFORM_SLUG: "true"
+
+container_scanning:
+  parallel: !reference [.parallel-matrix-config, parallel]
+  tags:
+    - platform-$PH_CUSTOM_PLATFORM

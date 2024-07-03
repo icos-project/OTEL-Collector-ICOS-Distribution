@@ -1,0 +1,72 @@
+#  ICOS OTEL Collector Distribution
+#  Copyright © 2022-2024 Engineering Ingegneria Informatica S.p.A.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+#  This work has received funding from the European Union's HORIZON research 
+#  and innovation programme under grant agreement No. 101070177.
+
+dist:
+  name: otelcol-icos
+  description: Basic OTel Collector distribution for ICOS Meta Operating System
+  output_path: ./otelcol-icos
+  otelcol_version: 0.92.0
+  version: 1.3.0
+
+extensions:
+  - gomod:
+      github.com/open-telemetry/opentelemetry-collector-contrib/extension/healthcheckextension v0.92.0
+  - gomod:
+      go.opentelemetry.io/collector/extension/ballastextension v0.92.0
+
+receivers:
+  - gomod:
+      go.opentelemetry.io/collector/receiver/otlpreceiver v0.92.0
+  - gomod:
+      github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver v0.92.0
+  - gomod:
+      github.com/open-telemetry/opentelemetry-collector-contrib/receiver/filelogreceiver v0.92.0
+  - gomod:
+      github.com/open-telemetry/opentelemetry-collector-contrib/receiver/journaldreceiver v0.92.0
+  - gomod:
+      github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver v0.92.0
+  - gomod:
+      github.com/open-telemetry/opentelemetry-collector-contrib/receiver/dockerstatsreceiver v0.92.0
+
+processors:
+  - gomod:
+      go.opentelemetry.io/collector/processor/batchprocessor v0.92.0
+  - gomod:
+      go.opentelemetry.io/collector/processor/memorylimiterprocessor v0.92.0
+  - gomod:
+      github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sattributesprocessor v0.92.0
+  - gomod:
+      github.com/open-telemetry/opentelemetry-collector-contrib/processor/attributesprocessor v0.92.0
+  - gomod:
+      github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor v0.92.0
+  - gomod:
+      github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor v0.92.0
+  - gomod:
+      github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor v0.92.0
+  - gomod:
+      github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourceprocessor v0.92.0
+
+exporters:
+  - gomod:
+      go.opentelemetry.io/collector/exporter/debugexporter v0.92.0
+  - gomod:
+      go.opentelemetry.io/collector/exporter/otlpexporter v0.92.0
+  - gomod:
+      github.com/open-telemetry/opentelemetry-collector-contrib/exporter/prometheusremotewriteexporter v0.92.0
+  - gomod:
+      github.com/open-telemetry/opentelemetry-collector-contrib/exporter/opensearchexporter v0.92.0
