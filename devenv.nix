@@ -18,19 +18,7 @@
 # and innovation programme under grant agreement No. 101070177.
 #
 
-FROM debian:12.4-slim
-
-# systemd is required because log collection uses "journalctl" command
-RUN apt-get update && apt-get -y install ca-certificates systemd && rm -rf /var/cache/apt/archives /var/lib/apt/lists/*
-
-ARG CUSTOM_PLATFORM_SLUG=
-
-
-COPY /otelcol-icos/otelcol-icos-$CUSTOM_PLATFORM_SLUG /otelcol-icos
-
-ARG USER_UID=10001
-USER ${USER_UID}
-
-EXPOSE 4317 55680 55679
-ENTRYPOINT ["/otelcol-icos"]
-CMD ["--config", "/etc/otel/config.yaml"]
+{ pkgs, ... }:
+{
+  languages.go.enable = true;
+}

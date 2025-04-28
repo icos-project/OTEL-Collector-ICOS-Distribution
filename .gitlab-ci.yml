@@ -8,6 +8,9 @@ include:
     ref: main
     file: '/jobs/golang.yaml'
 
+variables:
+  PH_GO_VERSION: "1.22.1"
+
 .parallel-matrix-config:
   parallel:
     matrix:
@@ -24,7 +27,7 @@ create_distribution:
       IFS=/ read -r -d '' PH_CUSTOM_OS PH_CUSTOM_ARCH PH_CUSTOM_VARIANT < <(printf "%s\0" "$PH_CUSTOM_PLATFORM")
       export PH_CUSTOM_PLATFORM_SLUG=${PH_CUSTOM_OS}-${PH_CUSTOM_ARCH}${PH_CUSTOM_VARIANT}
 
-      GO111MODULE=on go install go.opentelemetry.io/collector/cmd/builder@v0.92.0
+      GO111MODULE=on go install go.opentelemetry.io/collector/cmd/builder@v0.117.0
 
       export GOOS=$PH_CUSTOM_OS
       export GOARCH=$PH_CUSTOM_ARCH
